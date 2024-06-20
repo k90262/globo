@@ -4,6 +4,9 @@ public class HouseDbContext : DbContext
 {
     public DbSet<HouseEntity> Hourses => Set<HouseEntity>();
 
+    public HouseDbContext(DbContextOptions<HouseDbContext> o): 
+        base(o) {}
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var folder = Environment.SpecialFolder.LocalApplicationData; // About this path on MacOSX, see https://github.com/dotnet/runtime/issues/40353
