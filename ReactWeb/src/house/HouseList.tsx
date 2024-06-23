@@ -1,16 +1,7 @@
-import { useState } from "react";
-import { House } from "../types/House";
-import config from "../config";
+import useHouseHooks from "../hooks/HouseHooks";
 
 const HouseList = () => {
-    const [houses, setHouses] = useState<House[]>([]);
-
-    const fetchedHouses = async () => {
-        const rsp = await fetch(`${config.baseApiUrl}/houses`);
-        const houses= await rsp.json();
-        setHouses(houses);
-    };
-    fetchedHouses();
+    const houses = useHouseHooks();
 
     return (
         <div>
