@@ -7,11 +7,11 @@ const useHouseHooks = (): House[] => {
 
     useEffect(() => {
         const fetchedHouses = async () => {
-        const rsp = await fetch(`${config.baseApiUrl}/houses`);
-        const houses= await rsp.json();
-        setHouses(houses);
-    };
-    fetchedHouses();
+            const rsp = await fetch(`${config.baseApiUrl}/houses`);
+            const houses= await rsp.json();
+            setHouses(houses);
+        };
+        fetchedHouses();
     }, []);
 
     return houses;
