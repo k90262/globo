@@ -4,5 +4,5 @@ export type House = {
     country: string;
     description: string;
     price: number;
-    picture: string;
+    photo: string;
 }
