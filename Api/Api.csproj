@@ -16,4 +16,26 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Api.Tests.Unit\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Api.Tests.Unit\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Api.Tests.Unit\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Api.Tests.Unit\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Api.Tests.Unit\obj\Api.Tests.Unit.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="Api.Tests.Unit\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="Api.Tests.Unit\obj\project.packagespec.json" />
+  </ItemGroup>
+
 </Project>
