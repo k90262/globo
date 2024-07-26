@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,8 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors();
-builder.Services.AddDbContext<HouseDbContext>(o => 
-    o.UseQueryTrackingBehavior(Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking));
+builder.Services.AddDbContext<HouseDbContext>(o =>
+{
+    o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    
+    var folder = Environment.SpecialFolder.LocalApplicationData; // About this path on MacOSX, see https://github.com/dotnet/runtime/issues/40353
+    var path = Environment.GetFolderPath(folder);                // "/Users/apple/Library/Application Support/"
+    o.UseSqlite($"Data Source={Path.Join(path, "globo_houses.db")}");
+});
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
 
 var app = builder.Build();

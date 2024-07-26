@@ -58,7 +58,7 @@ public class HouseRepositoryTest
 
         var expectedList = storedList.Select(h => new HouseDto(h.Id, h.Address, h.Country, h.Price)).ToList();
 
-        await using (var context = new FakeHouseDbContext(options))
+        await using (var context = new HouseDbContext(options))
         {
             foreach (var houseEntity in storedList)
             {
@@ -69,7 +69,7 @@ public class HouseRepositoryTest
 
         // Act
         List<HouseDto> actualList;
-        await using (var context = new FakeHouseDbContext(options))
+        await using (var context = new HouseDbContext(options))
         {
             var repository = new HouseRepository(context);
             actualList = await repository.GetAll();
@@ -77,12 +77,5 @@ public class HouseRepositoryTest
 
         // Assert
         Assert.Equal(expectedList.Count, actualList.Count);
-    }
-}
-
-public class FakeHouseDbContext(DbContextOptions<HouseDbContext> o) : HouseDbContext(o)
-{
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
     }
 }
