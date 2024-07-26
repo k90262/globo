@@ -1,3 +1,4 @@
+using Api.Tests.Unit.Helpers;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,16 +7,38 @@ namespace Api.Tests.Unit.Data;
 [TestSubject(typeof(HouseRepository))]
 public class HouseRepositoryTest
 {
+    private HouseDbContext _context = null!;
+    private List<HouseEntity> _storedList = null!;
+    private List<HouseDto> _expectedList = null!;
+    private List<HouseDetailDto> _expectedDetailList = null!;
 
     [Fact]
     public async void GetAll_DataExist_ReturnsDataDto()
     {
         // Arrange
-        var options = new DbContextOptionsBuilder<HouseDbContext>()
-            .UseInMemoryDatabase(databaseName: "HouseRepositoryTest")
-            .Options;
+        await GivenInMemoryDatabaseWithData();
 
-        var storedList = new List<HouseEntity> {
+        // Act
+        var repository = new HouseRepository(_context);
+        var actualList = await repository.GetAll();
+
+        // Assert
+        Assert.Equal(_expectedList, actualList);
+    }
+
+    private async Task GivenInMemoryDatabaseWithData()
+    {
+        _context = new MockDb().CreateDbContext();
+        await GivenHouseEntities();
+        
+        _expectedList = _storedList.Select(h => new HouseDto(h.Id, h.Address, h.Country, h.Price)).ToList();
+        _expectedDetailList = _storedList.Select(e => new HouseDetailDto(e.Id, e.Address, e.Country, e.Price, e.Description, e.Photo)).ToList();
+
+    }
+
+    private async Task GivenHouseEntities()
+    {
+        _storedList = new List<HouseEntity> {
             new HouseEntity {
                 Id = 1,
                 Address = "12 Valley of Kings, Geneva",
@@ -56,26 +79,58 @@ public class HouseRepositoryTest
                 Price = 400500
             }};
 
-        var expectedList = storedList.Select(h => new HouseDto(h.Id, h.Address, h.Country, h.Price)).ToList();
-
-        await using (var context = new HouseDbContext(options))
+        foreach (var houseEntity in _storedList)
         {
-            foreach (var houseEntity in storedList)
-            {
-                context.Add(houseEntity);
-                await context.SaveChangesAsync();
-            }
+            _context.Add(houseEntity);
         }
+        await _context.SaveChangesAsync();
+    }
 
+    [Fact]
+    public async void GetAll_NoData_ReturnsEmptyList()
+    {
+        // Arrange
+        GivenEmptyInMemoryDatabase();
+        
         // Act
-        List<HouseDto> actualList;
-        await using (var context = new HouseDbContext(options))
-        {
-            var repository = new HouseRepository(context);
-            actualList = await repository.GetAll();
-        }
+        var repository = new HouseRepository(_context);
+        var actualList = await repository.GetAll();
 
         // Assert
-        Assert.Equal(expectedList.Count, actualList.Count);
+        Assert.Empty(actualList);
+    }
+
+    private void GivenEmptyInMemoryDatabase()
+    {
+        _context = new MockDb().CreateDbContext();
+    }
+
+    [Fact]
+    public async void Get_DataExist_ReturnsDataDto()
+    {
+        // Arrange
+        await GivenInMemoryDatabaseWithData();
+
+        // Act
+        var repository = new HouseRepository(_context);
+        var actual = await repository.Get(2);
+
+        // Assert
+        var expected = _expectedDetailList.Find(dto => dto.Id == 2);
+        Assert.Equal(expected, actual);
+    }
+    
+    [Fact]
+    public async void Get_NoData_ReturnsNull()
+    {
+        // Arrange
+        GivenEmptyInMemoryDatabase();
+
+        // Act
+        var repository = new HouseRepository(_context);
+        var actual = await repository.Get(2);
+
+        // Assert
+        Assert.Null(actual);
     }
 }

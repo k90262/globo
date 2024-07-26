@@ -11,6 +11,7 @@ builder.Services.AddDbContext<HouseDbContext>(o =>
 {
     o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     
+    // Ref. https://github.com/dotnet/AspNetCore.Docs.Samples/blob/main/fundamentals/minimal-apis/samples/MinApiTestsSample/WebMinRouteGroup/Program.cs
     var folder = Environment.SpecialFolder.LocalApplicationData; // About this path on MacOSX, see https://github.com/dotnet/runtime/issues/40353
     var path = Environment.GetFolderPath(folder);                // "/Users/apple/Library/Application Support/"
     o.UseSqlite($"Data Source={Path.Join(path, "globo_houses.db")}");
